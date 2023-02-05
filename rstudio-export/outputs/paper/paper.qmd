@@ -1,0 +1,261 @@
+---
+title: "Gender Wage Gap Persists in Canada"
+author: "Sarah Zhang"
+thanks: "Code and data are available at: https://github.com/xyszhang/gender-wage-gap-analysis."
+date: "`r format(Sys.time(), '%d %B %Y')`"
+output:
+  bookdown::pdf_document2:
+    toc: no
+abstract: "The analysis report is completed using the data collected by Open Data Toronto regarding different genders’ wages by education level. Detailed information on average earnings between men and women categorized by their age, education level, and geographical location was recorded. This dataset provides profound insights into the history of the gender wage gap and how the gap persists over the years regardless of age or education."
+format: pdf
+bibliography: references.bib
+---
+
+```{r}
+#| include: FALSE
+
+knitr::opts_chunk$set(echo = TRUE)
+
+library(tidyverse)
+library(ggplot2) # for graphs
+library(kableExtra)  # for tables
+```
+
+
+# Introduction
+
+According to the OECD, Canada has the eighth worst gender wage gap on its list of ranking countries (OECD). The gender wage gap refers to the pay differences between men and women, usually performing the same job role, but more so due to job segregation that constantly places women in lower-paid occupations or sectors (Kaplan). Even the UN’s Human Rights Committee has voiced its concerns about “the persisting inequalities between women and men” in Canada, specifically addressing the issue of the substantial wage gap, the inadequacy of legislation relating to equal pay, and the underrepresentation of women in leadership roles (UN).  
+
+This paper will be analyzing the data of different genders’ wages based on their education, age, and geographic location in hopes of shedding some light on the ongoing issue of pay inequality in Canada. It is important to note that this data is incomplete considering the lack of coverage on race, types of industry, immigration status, and the most recent data from 2020 to 2022. The data is sourced from Open Data Toronto and analyzed using R by filtering and selecting certain categories such as year, geography, type of work, wage, education level, and age group. Through exploring the data, I found that the gender wage gap persists over the years. Even with the increasing workforce of women, the same quality of education women receives, and the same age group, the wage gap between men and women is only slowly improving. The outcome of the data reminds us that gender inequality persists, and as a result of this issue, women are more likely to be prone to financial instability and even poverty. In this paper, I will be discussing the history of gender wage gap, the factors that plays in the wage gap like number of employees, education level, age group, and geographic location in Canada.     
+
+# Data
+
+In Figure 1., the data is cleaned by including all education levels and employees of age 15 and above to showcase the whole picture of the data (Figure \@ref(fig:averagewage)). The graph shows the ongoing history of the wage gap between the two genders from the year 1997 to 2019. As you can see, both genders’ wages increased but the gap remained. However, if we take a closer look at the data, the percentage of the wage gap is 18.43% between men and women in 1997 while the percentage of the wage gap decreased to 12.12% in 2019. 
+
+
+```{r averagewage}
+#| fig-cap: Average Hourly Wage from 1997 to 2019
+#| echo: false
+
+cleaned_wage_data <-
+  read_csv(
+    file = "cleaned_wage_data.csv",
+    show_col_types = FALSE
+  )         
+
+cleaned_wage_data |>
+  ggplot(aes(x = year)) +
+  geom_line(aes(y = avg_male_wage), color = "blue") +
+  geom_line(aes(y = avg_female_wage), color = "red") +
+  labs(
+    x = "Year",
+    y = "Average Hourly Wage",
+    color = "Gender"
+  ) 
+```
+
+
+There are many factors that could play into the closing wage gap, and one of them could be the increasing workforce of women. As shown in Figure 2., this graph included the total number of employees at all education levels and ages throughout the years (Figure \@ref(fig:totalemployees)). The graph has shown that the large gap in the workforce caught up with each other around the year 2006. By looking at the actual numbers, the workforce percentage difference between men and women was 9.1% in 1997 compared to only a 2.2% difference in 2019.  
+
+
+```{r totalemployees}
+#| fig-cap: Total Employees from 1997 to 2019
+#| echo: false
+
+cleaned_employee_data <-
+  read_csv(
+    file = "cleaned_employee_data.csv",
+    show_col_types = FALSE
+  )
+
+cleaned_employee_data |>
+  ggplot(aes(x = year)) +
+  geom_line(aes(y = male), color = "blue") +
+  geom_line(aes(y = female), color = "red") +
+  labs(
+    x = "Year",
+    y = "Total Employees",
+    color = "Gender"
+  ) 
+```
+
+At this point, I wonder if any other factors would be playing in the wage gap. In Figure 3., the data only consist of the average hourly wage of employees at different education levels in 2019 (Figure \@ref(fig:educationlevel)). As mentioned before, the mean wage percentage difference in 2019 is 12.12% with the lowest being 8.8% between men and women receiving education above a bachelor’s degree, while the highest being a 27.2% difference between men and women receiving education similar to a trade certificate or diploma. This also means that on average, for every dollar men earn, women earn about 88 cents only in 2019. This data regarding the pay difference at various education levels between the two genders also has proven that women only receive a slightly higher recognition when receiving education above a bachelor’s degree.  
+
+```{r educationlevel}
+#| fig-cap: Education Level vs. Average Hourly Wage
+#| echo: false
+
+cleaned_education_data <-
+  read_csv(
+    file = "cleaned_education_data.csv",
+    show_col_types = FALSE
+  )
+
+cleaned_education_data |>
+  ggplot(aes(x = education_level)) +
+  geom_point(aes(y = male), color = "blue") +
+  geom_point(aes(y = female), color = "red") +
+  theme_minimal() +
+  labs(
+    x = "Education Level",
+    y = "Average Hourly Wage",
+    color = "Gender"
+  ) 
+```
+
+\newpage
+
+Additionally, another set of data have also proven disadvantages for women does not only limit to education, but age as well. The data presented in Figure 4. composed of average hourly wage of all education levels but different age groups of both men and women in 2019 (Figure \@ref(fig:agegroup)). As you can observe from the graph, the wage gap widens more as the age increases. The wage gap percentage difference is only 6.6% between men and women in the age group of 15 to 24 years old. On the other hand, the percentage difference increased to 14.11% between the two genders in the age group of 55 years old and above. There is more to discuss here than age difference, many social factors play a part in the widening wage gap as well. For example, other studies have shown that the gender wage gap divide further apart around the time when women become mothers, and their wage continue to be affected with association to caregiving for aging relatives (“The Gender Pay Gap: Pay Gap in Canada: The Facts”). 
+
+```{r agegroup}
+#| fig-cap: Age Group vs. Average Hourly Wage
+#| echo: false
+
+cleaned_age_data <-
+  read_csv(
+    file = "cleaned_age_data.csv",
+    show_col_types = FALSE
+  )
+
+cleaned_age_data |>
+  ggplot(aes(x = age_group)) +
+  geom_point(aes(y = male), color = "blue") +
+  geom_point(aes(y = female), color = "red") +
+  theme_minimal() +
+  labs(
+    x = "Age Group",
+    y = "Average Hourly Wage",
+    color = "Gender"
+  ) 
+```
+
+
+```{r geography}
+#| fig-cap: Provinces vs. Average Hourly Wage
+#| echo: false
+
+cleaned_geography_data <-
+  read_csv(
+    file = "cleaned_geography_data.csv",
+    show_col_types = FALSE
+  )
+
+cleaned_geography_data |>
+  ggplot(aes(x = geography)) +
+  geom_point(aes(y = male), color = "blue") +
+  geom_point(aes(y = female), color = "red") +
+  theme_minimal() +
+  labs(
+    x = "Provinces",
+    y = "Average Hourly Wage",
+    color = "Gender"
+  ) 
+```
+
+Lastly, we will be looking at some data regarding the wage gap in different provinces and territories in Canada in Figure 4. and Table 1. (Figure \@ref(fig:geography) Table \@ref(tab:geographytable)).  Surprisingly, women earn 1% more, or 23 cents per hour on average than men in the province of Prince Edward Island while the highest average wage gap between men and women is in Alberta – 15.9%.  
+
+```{r geographytable}
+#| tbl-cap: Geography vs. Average Hourly Wage
+#| echo: false
+#| figure: 4px
+
+
+cleaned_geography_data <-
+  read_csv(
+    file = "cleaned_geography_data.csv",
+    show_col_types = FALSE
+  )
+
+library(gt)
+
+cleaned_geography_data |>
+  slice(1:10) |>
+  gt() |>
+  cols_label(
+    geography = "Provinces",
+    male = "Male Hourly Wage",
+    female = "Female Hourly Wage")
+```
+
+Looking at those data, it is undeniable that there is still a long way to narrow the wage gap between men and women. However, the Canadian government has taken actions to address this issue like introducing Ontario’s Pay Transparency Act in 2018, implementing the Pay Equity Act in 2021, and promoting gender diversity in the workplace (Canada). The progress of reducing the gender wage gap is slow but improving.  
+
+\newpage
+
+# References
+
+@Manual{citeR,
+    title = {R: A Language and Environment for Statistical Computing},
+    author = {{R Core Team}},
+    organization = {R Foundation for Statistical Computing},
+    address = {Vienna, Austria},
+    year = {2020},
+    url = {https://www.R-project.org/},
+  }
+
+ @Article{tidyverse,
+    title = {Welcome to the {tidyverse}},
+    author = {Hadley Wickham and Mara Averick and Jennifer Bryan and Winston Chang and Lucy D'Agostino McGowan and Romain François and Garrett Grolemund and Alex Hayes and Lionel Henry and Jim Hester and Max Kuhn and Thomas Lin Pedersen and Evan Miller and Stephan Milton Bache and Kirill Müller and Jeroen Ooms and David Robinson and Dana Paige Seidel and Vitalie Spinu and Kohske Takahashi and Davis Vaughan and Claus Wilke and Kara Woo and Hiroaki Yutani},
+    year = {2019},
+    journal = {Journal of Open Source Software},
+    volume = {4},
+    number = {43},
+    pages = {1686},
+    doi = {10.21105/joss.01686},
+  }
+
+@Book{ggplot2,
+    author = {Hadley Wickham},
+    title = {ggplot2: Elegant Graphics for Data Analysis},
+    publisher = {Springer-Verlag New York},
+    year = {2016},
+    isbn = {978-3-319-24277-4},
+    url = {https://ggplot2.tidyverse.org},
+  }
+  
+  @Manual{kableExtra,
+    title = {kableExtra: Construct Complex Table with 'kable' and Pipe Syntax},
+    author = {Hao Zhu},
+    year = {2021},
+    note = {http://haozhu233.github.io/kableExtra/,
+https://github.com/haozhu233/kableExtra},
+  }
+
+  @Manual{gt,
+    title = {gt: Easily Create Presentation-Ready Display Tables},
+    author = {Richard Iannone and Joe Cheng and Barret Schloerke and Ellis Hughes and JooYoung Seo},
+    year = {2022},
+    note = {https://gt.rstudio.com/, https://github.com/rstudio/gt},
+  }
+  
+  @Manual{opendatatoronto,
+    title = {opendatatoronto: Access the City of Toronto Open Data Portal},
+    author = {Sharla Gelfand},
+    year = {2022},
+    note = {https://sharlagelfand.github.io/opendatatoronto/,
+https://github.com/sharlagelfand/opendatatoronto/},
+  }
+  
+Yihui Xie (2023). knitr: A General-Purpose Package for Dynamic
+  Report Generation in R. R package version 1.42.
+
+  Yihui Xie (2015) Dynamic Documents with R and knitr. 2nd edition.
+  Chapman and Hall/CRC. ISBN 978-1498716963
+
+  Yihui Xie (2014) knitr: A Comprehensive Tool for Reproducible
+  Research in R. In Victoria Stodden, Friedrich Leisch and Roger D.
+  Peng, editors, Implementing Reproducible Computational Research.
+  Chapman and Hall/CRC. ISBN 978-1466561595
+
+Admin. “Pay Transparency.” Equal Pay Coalition,       http://equalpaycoalition.org/pay-transparency-to-close-the-gender-pay-gap-act/. 
+
+Canada, Employment and Social Development. “Government of Canada Announces That the Pay Equity Act Will Come into Force on August 31, 2021.” 
+Canada.ca, Government of Canada, 17 Nov. 2021, https://www.canada.ca/en/employment-social-development/news/2021/07/government-of-canada-announces-that-the-pay-equity-act-will-come-into-force-on-august-31-2021.html. 
+
+“Earnings and Wages - Gender Wage Gap - OECD Data.” TheOECD, https://data.oecd.org/earnwage/gender-wage-gap.htm. 
+
+“The Gender Pay Gap: Pay Gap in Canada: The Facts.” Canadian Women's Foundation, 
+23 Dec. 2022, https://canadianwomen.org/the-facts/the-gender-pay-gap/#:~:text=On%20average%2C%20women%20must%20work,worldwide%2C%20if%20present%20trends%20continue. 
+
+Kaplan, Sarah. “Gender Wage Gap.” Gender and the Economy, 16 Oct. 2020, https://www.gendereconomy.org/gender-wage-gap/. 
+
+Office of the United Nations High Commissioner for Human Rights. https://docstore.ohchr.org/SelfServices/FilesHandler.Ashx. 
